@@ -47,6 +47,7 @@ nav {
 
 /* 모바일 화면용 스타일 */
 @media (max-width: 768px) {
+  /* 메뉴 관련 */
   .menu {
     display: none;
     flex-direction: column;
@@ -69,7 +70,29 @@ nav {
   .menu-toggle {
     display: block;
   }
+
+  /* 본문 요소 */
+  body {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  h1, h2, h3 {
+    font-size: 18px;
+  }
+
+  select, button, input[type="text"] {
+    width: 100%;
+    font-size: 16px;
+    margin: 8px 0;
+  }
+
+  #userDropdown {
+    max-height: 120px;
+    font-size: 14px;
+  }
 }
+
 /* 메뉴바에서 로고 제거 시, 여백 조정 */
 .logo {
   display: none;
