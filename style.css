@@ -46,7 +46,6 @@ nav {
 }
 
 /* 모바일 화면용 스타일 */
-/* 모바일 화면용 스타일 */
 @media (max-width: 1024px) {
   /* 메뉴 관련 */
   .menu {
@@ -80,9 +79,10 @@ nav {
   }
 
   button, select, input[type="text"] {
-    width: 100%;         /* 화면 폭에 맞춤 */
+    width: 95%;         /* 섹션과 같은 너비 */
+    margin: 8px auto;   /* 중앙 정렬 */
     font-size: 16px;
-    margin: 8px 0;
+    display: block;
   }
 
   /* 섹션 폭과 여백 */
