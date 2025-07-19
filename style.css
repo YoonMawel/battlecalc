@@ -46,7 +46,7 @@ nav {
 }
 
 /* 모바일 화면용 스타일 */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /* 메뉴 관련 */
   .menu {
     display: none;
@@ -71,20 +71,23 @@ nav {
     display: block;
   }
 
-  /* 본문 요소 */
+  /* 본문 요소 (전체 폭 맞추기) */
   body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
     font-size: 14px;
-    padding: 10px;
+  }
+
+  section, button, select, input[type="text"] {
+    width: 100%;
+    max-width: 100%;  /* 좌우 여백 없이 꽉 채우기 */
+    font-size: 16px;
+    margin: 8px 0;
   }
 
   h1, h2, h3 {
     font-size: 18px;
-  }
-
-  select, button, input[type="text"] {
-    width: 100%;
-    font-size: 16px;
-    margin: 8px 0;
   }
 
   #userDropdown {
