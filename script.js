@@ -13,6 +13,7 @@ let monsterDefensePower = 0;
 let userAttackPowers = {};   // { "이름": 공격력 }
 let userDefensePowers = {};  // { "이름": 방어력 }
 let turn = 1;
+let monsterTarget = null;
 
 
 // 유저 데이터 로드
@@ -58,6 +59,66 @@ function renderUserDropdown(filter = '') {
             userDropdown.appendChild(btn);
         });
 }
+
+function renderHPManager() {
+    const hpControls = document.getElementById('hpControls');
+    hpControls.innerHTML = '';
+
+    Object.keys(currentUserHPs).forEach(name => {
+        const container = document.createElement('div');
+        container.style.marginBottom = '8px';
+
+        const label = document.createElement('span');
+        label.textContent = `${name} HP: ${currentUserHPs[name]} `;
+
+        // +10 버튼
+        const incBtn = document.createElement('button');
+        incBtn.textContent = '+10';
+        incBtn.onclick = () => {
+            currentUserHPs[name] += 10;
+            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
+        };
+
+        // -10 버튼
+        const decBtn = document.createElement('button');
+        decBtn.textContent = '-10';
+        decBtn.onclick = () => {
+            currentUserHPs[name] -= 10;
+            if (currentUserHPs[name] < 0) currentUserHPs[name] = 0;
+            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
+        };
+
+        // 풀회복 버튼 (개별 유저)
+        const healBtn = document.createElement('button');
+        healBtn.textContent = '풀회복';
+        healBtn.onclick = () => {
+            const user = users.find(u => u.name === name);
+            const maxHP = 100 + (user ? user.hp * 10 : 0);  // 원래 최대 체력 계산
+            currentUserHPs[name] = maxHP;
+            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
+        };
+
+        container.appendChild(label);
+        container.appendChild(incBtn);
+        container.appendChild(decBtn);
+        container.appendChild(healBtn);
+        hpControls.appendChild(container);
+    });
+}
+
+document.getElementById('saveHPBtn').addEventListener('click', () => {
+    localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
+    alert('체력이 저장되었습니다.');
+});
+
+// 체력 UI 수동 갱신 버튼
+document.getElementById('refreshHPBtn').addEventListener('click', () => {
+    renderHPManager();
+    alert('체력 UI가 갱신되었습니다.');
+});
 
 function selectUser(index) {
     if (selectedUsers.includes(index)) return;
@@ -127,34 +188,51 @@ fetch('users.json')
 document.getElementById('startBattleBtn').addEventListener('click', () => {
     const selectedMonster = monsters[monsterSelect.value];
 
-    currentMonsterHP = selectedMonster.hp;
+    // 저장된 체력 불러오기 (있으면 이어서 사용)
+    const savedUserHPs = JSON.parse(localStorage.getItem('savedUserHPs') || '{}');
+    const savedMonsterHP = localStorage.getItem('savedMonsterHP');
 
-    currentUserHPs = {};
-    selectedUsers.forEach(i => {
-        const user = users[i];
-        const baseHP = 100 + (user.hp * 10);
-        currentUserHPs[user.name] = baseHP;
-    });
+    currentUserHPs = {};  // ★ 항상 먼저 초기화 (중복 데이터 방지)
+
+    if (savedMonsterHP !== null && Object.keys(savedUserHPs).length > 0) {
+        currentMonsterHP = parseInt(savedMonsterHP, 10);
+
+        // 선택된 유저만 체력 로드
+        selectedUsers.forEach(i => {
+            const user = users[i];
+            const baseHP = 100 + (user.hp * 10);
+            const hp = savedUserHPs.hasOwnProperty(user.name) ? parseInt(savedUserHPs[user.name], 10) : baseHP;
+            currentUserHPs[user.name] = isNaN(hp) ? baseHP : hp;
+        });
+    } else {
+        // 저장된 값 없으면 새로 초기화
+        selectedUsers.forEach(i => {
+            const user = users[i];
+            const baseHP = 100 + (user.hp * 10);
+            currentUserHPs[user.name] = baseHP;
+        });
+    }
 
     turn = 1;
 
     const startText =
         `[${selectedMonster.name}] 와 전투를 시작합니다.\n\n` +
         `[${selectedMonster.name}] 정보\n` +
-        `체력 ${selectedMonster.hp} / 랜덤 1명 공격 / 그 외 불명\n\n` +
+        `체력 ${currentMonsterHP} / 랜덤 1명 공격 / 그 외 불명\n\n` +
         `=== 전투 개시 ===`;
 
-    // 출력
     resultDiv.innerHTML = startText.replace(/\n/g, '<br>');
 
-    // 복사 버튼 추가
     const copyBtn = document.createElement('button');
     copyBtn.textContent = '복사하기';
     copyBtn.onclick = () => navigator.clipboard.writeText(startText);
     resultDiv.appendChild(copyBtn);
 
+    renderHPManager();  // 체력 조정 UI 갱신
+
     document.getElementById('nextTurnBtn').disabled = false;
 });
+
 
 // 몬스터 행동 계산
 document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
@@ -191,6 +269,7 @@ document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
         if (monsterAction === 'attack' && selectedUserObjs.length > 0) {
             const randomIndex = Math.floor(Math.random() * selectedUserObjs.length);
             const targetUser = selectedUserObjs[randomIndex];
+            monsterTarget = targetUser.name;  // ★ 공격 대상 저장
             currentUserHPs[targetUser.name] -= totalPower;
             if (currentUserHPs[targetUser.name] < 0) currentUserHPs[targetUser.name] = 0;
             resultText = `${selectedMonster.name}이(가) ${targetUser.name}을(를) ${totalPower}만큼 공격했습니다. (+15)`;
@@ -342,26 +421,27 @@ document.getElementById('toggleDetailsBtn').addEventListener('click', () => {
 document.getElementById('nextTurnBtn').addEventListener('click', () => {
     const selectedMonster = monsters[monsterSelect.value];  // 현재 몬스터 정보
 
-    // 이번 턴 결과를 매번 새로 표시 (누적 X)
+    // 몬스터 액션 문장은 정산에 안 넣고, 위 monsterResult에만 표시
     resultDiv.innerHTML = `=== [턴 ${turn}] 정산 ===<br>`;
 
     // (1) 몬스터 → 유저 공격 (몬스터 공격력 vs 유저 방어력)
     if (monsterAttackPower > 0 && selectedUsers.length > 0) {
-        const target = Object.keys(currentUserHPs).find(name => currentUserHPs[name] > 0);
-        if (target) {
-            const defense = userDefensePowers[target] || 0;
+        if (monsterAttackPower > 0 && monsterTarget && currentUserHPs[monsterTarget] !== undefined) {
+            const defense = userDefensePowers[monsterTarget] || 0;
             let damage = monsterAttackPower - defense;
             if (damage < 0) damage = 0;
 
-            currentUserHPs[target] -= damage;
-            if (currentUserHPs[target] < 0) currentUserHPs[target] = 0;
+            currentUserHPs[monsterTarget] -= damage;
+            if (currentUserHPs[monsterTarget] < 0) currentUserHPs[monsterTarget] = 0;
 
             if (defense > 0) {
-                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${target} 방어값 ${defense}. 총 ${damage} 피해를 입었습니다.<br><br>`;
+                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${monsterTarget}이(가) 방어 ${defense} 후 ${damage} 피해를 입었습니다.<br><br>`;
             } else {
-                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${target} 방어값 없음. ${damage} 피해를 입었습니다.<br><br>`;
+                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${monsterTarget}이(가) 방어값 없음. ${damage} 피해를 입었습니다.<br><br>`;
             }
         }
+        monsterTarget = null;  // 다음 턴 전용으로 초기화
+
     }
 
     // (2) 유저들 → 몬스터 공격 (유저 공격력 vs 몬스터 방어력)
@@ -407,6 +487,8 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
     localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
     localStorage.setItem('savedMonsterHP', currentMonsterHP);
 
+    renderHPManager();  //체력 조정 UI 동기화
+
     turn++;
 });
 
@@ -417,5 +499,3 @@ const menu = document.querySelector('.menu');
 menuToggle.addEventListener('click', () => {
     menu.classList.toggle('open');
 });
-
-
