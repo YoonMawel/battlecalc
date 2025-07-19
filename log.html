@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>전투 기록</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    .log-entry { border-bottom: 1px solid #ccc; margin-bottom: 15px; padding-bottom: 10px; }
+    button { margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <!-- 반응형 메뉴바 -->
+  <nav>
+    <div class="nav-container">
+      <div class="logo">조사툴</div>
+      <button class="menu-toggle" aria-label="메뉴 열기">☰</button>
+      <div class="menu">
+        <a href="index.html">팀별조사</a>
+        <a href="mode2.html">레이드</a>
+        <a href="log.html">전투 기록</a>
+      </div>
+    </div>
+  </nav>
+
+  <h1>전투 기록</h1>
+  <div id="logs"></div>
+  <button id="clearLogs">기록 초기화</button>
+
+  <script>
+    // 전투 로그 불러오기
+    const logsContainer = document.getElementById('logs');
+    const logs = localStorage.getItem('battleLogs') ? JSON.parse(localStorage.getItem('battleLogs')) : [];
+
+    if (logs.length === 0) {
+      logsContainer.innerHTML = "<p>저장된 전투 기록이 없습니다.</p>";
+    } else {
+      logs.forEach(log => {
+        const div = document.createElement('div');
+        div.className = 'log-entry';
+        div.innerHTML = `<strong>[턴 ${log.turn}] (${log.timestamp})</strong><br>${log.content}`;
+        logsContainer.appendChild(div);
+      });
+    }
+
+    // 로그 초기화 버튼
+    document.getElementById('clearLogs').addEventListener('click', () => {
+      if (confirm("모든 전투 기록을 삭제하시겠습니까?")) {
+        localStorage.removeItem('battleLogs');
+        location.reload();
+      }
+    });
+
+    // 모바일 메뉴 토글
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+    menuToggle.addEventListener('click', () => {
+      menu.classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

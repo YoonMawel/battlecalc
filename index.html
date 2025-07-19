@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>전투력 계산기 (팀별)</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: sans-serif; margin: 20px; }
+    select, button { margin: 5px; }
+    .calc-details { display: none; background: #f3f3f3; padding: 10px; margin-top: 10px; }
+    .result-line { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-container">
+      <div class="logo">조사툴</div>
+      <button class="menu-toggle" aria-label="메뉴 열기">☰</button>
+      <div class="menu">
+        <a href="index.html">팀별조사</a>
+        <a href="mode2.html">레이드</a>
+        <a href="log.html">전투 기록</a>
+      </div>
+    </div>
+  </nav>
+
+  <h1>전투력 계산기 (팀별조사)</h1>
+
+  <label>몬스터 선택:
+    <select id="monsterSelect"></select>
+  </label>
+
+  <section>
+  <h2>유저 선택 (최대 6명)</h2>
+  <input type="text" id="userSearch" placeholder="유저 검색..." style="width: 400px;">
+  <div id="userDropdown" style="border:1px solid #aaa; max-height:150px; overflow:auto;"></div>
+  <div id="selectedUsers" style="margin-top:10px; font-weight:bold;">선택된 유저: (0/6)</div>
+  <div id="actionsContainer"></div>
+  </section>
+
+  <section>
+  <h3>몬스터 행동/캐릭터 행동</h3>
+  <label>몬스터 행동:
+    <select id="monsterAction">
+      <option value="attack">공격</option>
+      <option value="defense">방어</option>
+    </select>
+  </label>
+  <div id="monsterResult"></div>
+  </section>
+
+  <button id="startBattleBtn">전투 시작</button>
+  <button id="calculateMonsterBtn">몬스터 행동 계산</button>
+  <button id="calculateUsersBtn">유저 행동 계산</button>
+  <button id="nextTurnBtn">다음 턴 진행</button>
+
+  <section>
+  <h2>결과</h2>
+  <div id="result"></div>
+  <button id="copyAllBtn">전체 결과 복사</button>
+  <button id="toggleDetailsBtn" style="margin-top:10px;">계산 과정 보기/숨기기</button>
+  <div id="calcDetails" class="calc-details"></div>
+  </section>
+
+  <button id="toggleDetailsBtn" style="margin-top:10px;">계산 과정 보기/숨기기</button>
+  <div id="calcDetails" class="calc-details"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
