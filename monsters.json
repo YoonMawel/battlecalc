@@ -1,6 +1,6 @@
 [
-  { "name": "창귀", "power": 1, "defense": 0, "hp": 20 },
-  { "name": "도깨비", "power": 1, "defense": 1, "hp": 20 },
-  { "name": "아귀", "power": 2, "defense": 2, "hp": 30 },
-  { "name": "마녀", "power": 3, "defense": 3, "hp": 40 }
+  { "name": "창귀", "power": 1, "defense": 0, "luck": 0, "hp": 20 },
+  { "name": "도깨비", "power": 1, "defense": 1, "luck": 0, "hp": 20 },
+  { "name": "아귀", "power": 2, "defense": 2, "luck": 0, "hp": 30 },
+  { "name": "마녀", "power": 3, "defense": 3, "luck": 0, "hp": 40 }
 ]
