@@ -51,12 +51,13 @@ let selectedUsers = [];
 function renderUserDropdown(filter = '') {
     userDropdown.innerHTML = '';
     users
+        .map((u, idx) => ({ ...u, realIndex: idx }))  // 실제 인덱스 보존
         .filter(u => u.name.includes(filter))
         .forEach((u, i) => {
             const btn = document.createElement('button');
             btn.textContent = `${u.name} (공:${u.attack}, 방:${u.defense}, 행:${u.luck})`;
             btn.style.display = 'block';
-            btn.onclick = () => selectUser(i);
+            btn.onclick = () => selectUser(u.realIndex);
             userDropdown.appendChild(btn);
         });
 }
