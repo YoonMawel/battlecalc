@@ -46,6 +46,7 @@ nav {
 }
 
 /* 모바일 화면용 스타일 */
+/* 모바일 화면용 스타일 */
 @media (max-width: 1024px) {
   /* 메뉴 관련 */
   .menu {
@@ -71,24 +72,25 @@ nav {
     display: block;
   }
 
-  /* 본문 요소 (전체 폭 맞추기) */
+  /* 본문 요소 (기본 크기 조정) */
   body {
     margin: 0;
     padding: 0;
-    width: 100%;
     font-size: 14px;
   }
 
-  section, button, select, input[type="text"] {
-    width: 100%;
-    max-width: 100%;  /* 좌우 여백 없이 꽉 채우기 */
+  button, select, input[type="text"] {
+    width: 100%;         /* 화면 폭에 맞춤 */
     font-size: 16px;
     margin: 8px 0;
   }
 
+  /* 섹션 폭과 여백 */
   section {
-  margin-left: 10px;
-  margin-right: 10px;
+    width: 95%;               /* 좌우 여백 확보 */
+    margin: 10px auto;        /* 중앙 정렬 */
+    padding: 10px;
+    box-sizing: border-box;   /* 패딩 포함해서 95% 유지 */
   }
 
   h1, h2, h3 {
@@ -100,6 +102,7 @@ nav {
     font-size: 14px;
   }
 }
+
 
 /* 메뉴바에서 로고 제거 시, 여백 조정 */
 .logo {
