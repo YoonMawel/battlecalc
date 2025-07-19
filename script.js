@@ -196,17 +196,15 @@ document.getElementById('startBattleBtn').addEventListener('click', () => {
 
     currentUserHPs = {};  //항상 먼저 초기화 (중복 데이터 방지)
 
-    //몬스터 HP도 초기화 (NaN 방지)
-    if (savedMonsterHP !== null) {
+    // 몬스터 HP 초기화 (NaN 방지: 유효한 숫자만 반영)
+    if (savedMonsterHP !== null && !isNaN(parseInt(savedMonsterHP, 10))) {
         currentMonsterHP = parseInt(savedMonsterHP, 10);
     } else {
         currentMonsterHP = selectedMonster.hp;  // 저장된 값 없으면 기본 HP 사용
     }
 
-    if (savedMonsterHP !== null && Object.keys(savedUserHPs).length > 0) {
-        currentMonsterHP = parseInt(savedMonsterHP, 10);
-
-        // 선택된 유저만 체력 로드
+    // 유저 HP 로드
+    if (Object.keys(savedUserHPs).length > 0) {
         selectedUsers.forEach(i => {
             const user = users[i];
             const baseHP = 100 + (user.hp * 10);
@@ -241,7 +239,6 @@ document.getElementById('startBattleBtn').addEventListener('click', () => {
 
     document.getElementById('nextTurnBtn').disabled = false;
 });
-
 
 // 몬스터 행동 계산
 document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
