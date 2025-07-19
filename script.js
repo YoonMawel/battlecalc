@@ -14,6 +14,7 @@ let userAttackPowers = {};   // { "이름": 공격력 }
 let userDefensePowers = {};  // { "이름": 방어력 }
 let turn = 1;
 let monsterTarget = null;
+let monsterHits = {};  // 턴마다 몬스터가 누구 때렸는지 기록
 
 
 // 유저 데이터 로드
@@ -192,7 +193,14 @@ document.getElementById('startBattleBtn').addEventListener('click', () => {
     const savedUserHPs = JSON.parse(localStorage.getItem('savedUserHPs') || '{}');
     const savedMonsterHP = localStorage.getItem('savedMonsterHP');
 
-    currentUserHPs = {};  // ★ 항상 먼저 초기화 (중복 데이터 방지)
+    currentUserHPs = {};  //항상 먼저 초기화 (중복 데이터 방지)
+
+    //몬스터 HP도 초기화 (NaN 방지)
+    if (savedMonsterHP !== null) {
+        currentMonsterHP = parseInt(savedMonsterHP, 10);
+    } else {
+        currentMonsterHP = selectedMonster.hp;  // 저장된 값 없으면 기본 HP 사용
+    }
 
     if (savedMonsterHP !== null && Object.keys(savedUserHPs).length > 0) {
         currentMonsterHP = parseInt(savedMonsterHP, 10);
@@ -269,13 +277,23 @@ document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
         if (monsterAction === 'attack' && selectedUserObjs.length > 0) {
             const randomIndex = Math.floor(Math.random() * selectedUserObjs.length);
             const targetUser = selectedUserObjs[randomIndex];
-            monsterTarget = targetUser.name;  // ★ 공격 대상 저장
+
+            monsterTarget = targetUser.name;
             currentUserHPs[targetUser.name] -= totalPower;
             if (currentUserHPs[targetUser.name] < 0) currentUserHPs[targetUser.name] = 0;
-            resultText = `${selectedMonster.name}이(가) ${targetUser.name}을(를) ${totalPower}만큼 공격했습니다. (+15)`;
+
+            // 정산용으로 공격 기록 남김 (턴마다 누적 가능)
+            monsterHits[targetUser.name] = {
+                damage: totalPower,
+                defense: userDefensePowers[targetUser.name] || 0
+            };
+
+            resultText = `${selectedMonster.name}이(가) ${targetUser.name}을(를) ${totalPower}만큼 공격했습니다.` + (luckCheck >= 14 ? ' (+15)' : '');
 
             monsterAttackPower = totalPower;
             monsterDefensePower = 0;
+
+
         } else {
             resultText = `${selectedMonster.name}이(가) 스스로 방어 태세를 취했습니다. (총 방어값: ${totalPower})`;
 
@@ -287,7 +305,17 @@ document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
         if (monsterAction === 'attack' && selectedUserObjs.length > 0) {
             const randomIndex = Math.floor(Math.random() * selectedUserObjs.length);
             const targetUser = selectedUserObjs[randomIndex];
+
             currentUserHPs[targetUser.name] -= totalPower;
+
+            if (currentUserHPs[targetUser.name] < 0) currentUserHPs[targetUser.name] = 0;
+
+            // ★ 성공일 때도 공격 기록 남김
+            monsterHits[targetUser.name] = {
+                damage: totalPower,
+                defense: userDefensePowers[targetUser.name] || 0
+            };
+
             if (currentUserHPs[targetUser.name] < 0) currentUserHPs[targetUser.name] = 0;
             resultText = `${selectedMonster.name}이(가) ${targetUser.name}을(를) ${totalPower}만큼 공격했습니다.`;
 
@@ -424,25 +452,20 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
     // 몬스터 액션 문장은 정산에 안 넣고, 위 monsterResult에만 표시
     resultDiv.innerHTML = `=== [턴 ${turn}] 정산 ===<br>`;
 
-    // (1) 몬스터 → 유저 공격 (몬스터 공격력 vs 유저 방어력)
-    if (monsterAttackPower > 0 && selectedUsers.length > 0) {
-        if (monsterAttackPower > 0 && monsterTarget && currentUserHPs[monsterTarget] !== undefined) {
-            const defense = userDefensePowers[monsterTarget] || 0;
-            let damage = monsterAttackPower - defense;
-            if (damage < 0) damage = 0;
+    // (1) 몬스터 → 유저 공격 (턴마다 누적된 모든 타격 정산)
+    Object.entries(monsterHits).forEach(([target, info]) => {
+        const { damage, defense } = info;
 
-            currentUserHPs[monsterTarget] -= damage;
-            if (currentUserHPs[monsterTarget] < 0) currentUserHPs[monsterTarget] = 0;
+        resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${target} ` +
+            (defense > 0 ? `(방어 ${defense}) ` : '(방어 없음) ') +
+            `${damage} 피해! 현재 HP: ${currentUserHPs[target]}<br>`;
+    });
 
-            if (defense > 0) {
-                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${monsterTarget}이(가) 방어 ${defense} 후 ${damage} 피해를 입었습니다.<br><br>`;
-            } else {
-                resultDiv.innerHTML += `${selectedMonster.name}의 공격 → ${monsterTarget}이(가) 방어값 없음. ${damage} 피해를 입었습니다.<br><br>`;
-            }
-        }
-        monsterTarget = null;  // 다음 턴 전용으로 초기화
-
-    }
+    // 정산 후 초기화
+    monsterHits = {};
+    monsterAttackPower = 0;
+    monsterDefensePower = 0;
+    monsterTarget = null;
 
     // (2) 유저들 → 몬스터 공격 (유저 공격력 vs 몬스터 방어력)
     Object.entries(userAttackPowers).forEach(([name, atk]) => {
@@ -488,6 +511,9 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
     localStorage.setItem('savedMonsterHP', currentMonsterHP);
 
     renderHPManager();  //체력 조정 UI 동기화
+
+    monsterTarget = null;
+    monsterAttackPower = 0;
 
     turn++;
 });
