@@ -71,35 +71,33 @@ nav {
     display: block;
   }
 
-  /* 본문 요소 (기본 크기 조정) */
-  body {
-    margin: 0;
-    padding: 0;
-    font-size: 14px;
+  /* 본문 섹션을 항상 중앙으로 */
+  section {
+    width: 95%;
+    margin: 10px auto;         /* 항상 가운데 */
+    padding: 10px;
+    box-sizing: border-box;
   }
 
-  button, select, input[type="text"] {
-    width: 95%;         /* 섹션과 같은 너비 */
-    margin: 8px auto;   /* 중앙 정렬 */
+  /* 내부 요소들 (버튼/드롭다운/검색창) 섹션 기준으로 맞추기 */
+  button, select, input[type="text"], #userDropdown {
+    width: 100%;               /* 섹션 폭을 꽉 채우기 */
+    max-width: 100%;           /* 절대 넘치지 않도록 */
+    margin: 8px 0;
     font-size: 16px;
     display: block;
+    box-sizing: border-box;    /* 패딩 포함해서 100% 유지 */
   }
 
-  /* 섹션 폭과 여백 */
-  section {
-    width: 95%;               /* 좌우 여백 확보 */
-    margin: 10px auto;        /* 중앙 정렬 */
-    padding: 10px;
-    box-sizing: border-box;   /* 패딩 포함해서 95% 유지 */
+  /* #userSearch 고정 폭 제거 */
+  #userSearch {
+    width: 100%;
+    max-width: 100%;
+    margin-bottom: 10px;
   }
 
   h1, h2, h3 {
     font-size: 18px;
-  }
-
-  #userDropdown {
-    max-height: 120px;
-    font-size: 14px;
   }
 }
 
