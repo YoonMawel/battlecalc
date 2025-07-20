@@ -4,6 +4,7 @@ const resultDiv = document.getElementById('result');
 const calcDetailsDiv = document.getElementById('calcDetails');
 const monsterResultDisplay = document.getElementById('monsterResultDisplay'); // ★★★ 이 줄
 const userResultDisplay = document.getElementById('userResultDisplay');     // ★★★ 이 줄
+const copyAllBtn = document.getElementById('copyAllBtn');
 
 let users = [];
 let monsters = [];
@@ -242,7 +243,7 @@ document.getElementById('startBattleBtn').addEventListener('click', () => {
     copyBtn.onclick = () => navigator.clipboard.writeText(startText);
     resultDiv.appendChild(copyBtn);
 
-    renderHPManager();  // 체력 조정 UI 갱신
+    renderHPManager(); // 체력 조정 UI 갱신
 
     document.getElementById('nextTurnBtn').disabled = false;
 });
@@ -310,7 +311,7 @@ document.getElementById('calculateMonsterBtn').addEventListener('click', () => {
 
         luckText = `행운 판정 ${luckCheck}. ` + (luckCheck >= 14 ? '대성공.' : '성공.');
         resultText = `${selectedMonster.name}이(가) ${targetUser.name}을(를) 공격 대상으로 선택했습니다.` +
-            (luckCheck >= 14 ? ' (몬스터 대성공!)' : '');
+            (luckCheck >= 14 ? ' (행운 대성공)' : '');
 
         monsterAttackPower = totalPower;
         monsterDefensePower = 0;
@@ -358,7 +359,7 @@ document.getElementById('calculateUsersBtn').addEventListener('click', () => {
     console.log('디버그: calculateUsersBtn 실행 시 동기화된 userActions:', userActions);
 
     userResultDisplay.innerHTML = '';
-    userResultDisplay.innerHTML += `<h4>유저 행동 결과</h4>`;
+    userResultDisplay.innerHTML += `<h4>캐릭터 행동 결과</h4>`;
 
     let allResultText = '';
     calcDetailsDiv.innerHTML = '';
@@ -483,12 +484,12 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
                 if (currentUserHPs[targetUser.name] < 0) currentUserHPs[targetUser.name] = 0;
 
                 resultDiv.innerHTML += `${selectedMonster.name}의 공격(${monsterPureAttackPower}) → ${targetName} ` +
-                    (userEffectiveDefense > 0 ? `(방어 ${userEffectiveDefense}) ` : '(방어 안 함) ') +
-                    `${finalDamage} 피해! 현재 HP: ${currentUserHPs[targetName]}<br>`;
+                    (userEffectiveDefense > 0 ? `(방어값 ${userEffectiveDefense}) ` : '(방어 안 함) ') +
+                    `${targetName}이 ${finalDamage}만큼의 피해를 입었습니다. 현재 HP: ${currentUserHPs[targetName]}<br>`;
             }
         });
     } else {
-        resultDiv.innerHTML += `${selectedMonster.name}은(는) 이번 턴에 유저를 공격하지 않았습니다.<br>`;
+        resultDiv.innerHTML += `${selectedMonster.name}은(는) 이번 턴에 캐릭터를 공격하지 않았습니다.<br>`;
     }
 
     monsterHits = {};
@@ -496,7 +497,7 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
     monsterDefensePower = 0;
     monsterTarget = null;
 
-    resultDiv.innerHTML += `<br>--- 유저의 행동 ---<br>`;
+    resultDiv.innerHTML += `<br>--- 캐릭터의 행동 ---<br>`;
 
     if (Object.keys(userAttackPowers).length > 0) {
         Object.entries(userAttackPowers).forEach(([name, atk]) => {
@@ -544,16 +545,40 @@ document.getElementById('nextTurnBtn').addEventListener('click', () => {
 
     renderHPManager();
 
-    const copyTurnBtn = document.createElement('button');
-    copyTurnBtn.textContent = '정산 결과 전체 복사';
-    copyTurnBtn.onclick = () => {
-        navigator.clipboard.writeText(resultDiv.innerText);
-        alert('정산 결과가 복사되었습니다!');
-    };
-    resultDiv.appendChild(copyTurnBtn);
-
     turn++;
 });
+
+// ★★★ 추가: HTML에 있는 copyAllBtn에 클릭 이벤트 리스너 연결
+if (copyAllBtn) {
+    copyAllBtn.addEventListener('click', () => {
+        // resultDiv의 텍스트만 복사하도록 합니다.
+        // 이제 resultDiv 안에는 copyAllBtn이 없으므로, 버튼 텍스트는 복사되지 않습니다.
+        navigator.clipboard.writeText(resultDiv.innerText);
+        alert('정산 결과가 복사되었습니다!');
+    });
+} else {
+    console.error("ID가 'copyAllBtn'인 '전체 결과 복사' 버튼을 찾을 수 없습니다.");
+}
+
+// '계산 과정 보기/숨기기' 버튼과 calcDetails Div 가져오기
+const toggleDetailsBtn = document.getElementById('toggleDetailsBtn');
+const calcDetails = document.getElementById('calcDetails'); // HTML에 이미 존재하는 calcDetails Div
+
+// 버튼 클릭 이벤트 리스너
+if (toggleDetailsBtn && calcDetails) {
+    toggleDetailsBtn.addEventListener('click', () => {
+        // calcDetails Div의 현재 display 상태를 확인하여 토글
+        if (calcDetails.style.display === 'none') {
+            calcDetails.style.display = 'block'; // 보이게 함
+            toggleDetailsBtn.textContent = '계산 과정 숨기기'; // 버튼 텍스트 변경
+        } else {
+            calcDetails.style.display = 'none'; // 숨김
+            toggleDetailsBtn.textContent = '계산 과정 보기'; // 버튼 텍스트 변경
+        }
+    });
+} else {
+    console.error("ID가 'toggleDetailsBtn' 또는 'calcDetails'인 요소를 찾을 수 없습니다.");
+}
 
 // 모바일 메뉴 토글 기능
 const menuToggle = document.querySelector('.menu-toggle');

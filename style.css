@@ -150,6 +150,14 @@ section {
   border-radius: 6px;         /* 모서리 살짝 둥글게 */
   background-color: #fafafa;  /* 연한 배경으로 섹션 구분 */
 }
+
+.calc-details {
+  display: none; /* 초기에는 숨김 */
+  background: #f3f3f3;
+  padding: 10px;
+  margin-top: 10px;
+}
+
 section h2, section h3 {
   margin-top: 0;
 }
