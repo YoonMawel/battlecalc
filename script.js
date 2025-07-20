@@ -54,47 +54,69 @@ function renderUserDropdown(filter = '') {
 
 function renderHPManager() {
     const hpControls = document.getElementById('hpControls');
-    hpControls.innerHTML = '';
+    hpControls.innerHTML = ''; // 기존 내용 초기화
 
     Object.keys(currentUserHPs).forEach(name => {
         const container = document.createElement('div');
         container.style.marginBottom = '8px';
+        container.style.display = 'flex'; // 요소들을 한 줄에 정렬하기 위함
+        container.style.alignItems = 'center'; // 세로 중앙 정렬
 
         const label = document.createElement('span');
-        label.textContent = `${name} HP: ${currentUserHPs[name]} `;
+        label.textContent = `${name} HP: `;
+        label.style.marginRight = '5px'; // 레이블과 입력 필드 사이 간격
 
-        // +10 버튼
+        // ★★★ 추가: 체력을 직접 입력할 수 있는 input 필드
+        const hpInput = document.createElement('input');
+        hpInput.type = 'number'; // 숫자만 입력 가능하도록 설정
+        hpInput.value = currentUserHPs[name]; // 현재 체력으로 초기값 설정
+        hpInput.style.width = '70px'; // 입력 필드 너비 조정
+        hpInput.style.marginRight = '5px'; // 입력 필드와 버튼 사이 간격
+
+        // input 필드 값이 변경될 때마다 체력 업데이트
+        hpInput.addEventListener('change', (event) => {
+            const newValue = parseInt(event.target.value, 10);
+            if (!isNaN(newValue)) {
+                currentUserHPs[name] = Math.max(0, newValue); // 0 미만 방지
+                event.target.value = currentUserHPs[name]; // 실제 적용된 값으로 UI 업데이트
+                localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
+                console.log(`${name} HP가 ${currentUserHPs[name]}으로 수동 업데이트됨`);
+            }
+        });
+
+        // 기존 +10 버튼
         const incBtn = document.createElement('button');
         incBtn.textContent = '+10';
         incBtn.onclick = () => {
             currentUserHPs[name] += 10;
-            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            hpInput.value = currentUserHPs[name]; // input 필드 값도 업데이트
             localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
         };
 
-        // -10 버튼
+        // 기존 -10 버튼
         const decBtn = document.createElement('button');
         decBtn.textContent = '-10';
         decBtn.onclick = () => {
             currentUserHPs[name] -= 10;
             if (currentUserHPs[name] < 0) currentUserHPs[name] = 0;
-            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            hpInput.value = currentUserHPs[name]; // input 필드 값도 업데이트
             localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
         };
 
-        // 풀회복 버튼 (개별 유저)
+        // 기존 풀회복 버튼
         const healBtn = document.createElement('button');
         healBtn.textContent = '풀회복';
         healBtn.onclick = () => {
             const user = users.find(u => u.name === name);
-            // 기본 HP를 100으로 가정 (user.hp * 10 부분이 없어서 임시로 100+a)
-            const maxHP = 100 + (user ? (user.hp * 10) : 0); // user.hp가 기본 스탯이므로, 적절히 스케일링
+            const maxHP = 100 + (user ? (user.hp * 10) : 0);
             currentUserHPs[name] = maxHP;
-            label.textContent = `${name} HP: ${currentUserHPs[name]}`;
+            hpInput.value = currentUserHPs[name]; // input 필드 값도 업데이트
             localStorage.setItem('savedUserHPs', JSON.stringify(currentUserHPs));
         };
 
+        // 컨테이너에 요소들 추가
         container.appendChild(label);
+        container.appendChild(hpInput); // ★★★ input 필드 추가
         container.appendChild(incBtn);
         container.appendChild(decBtn);
         container.appendChild(healBtn);
