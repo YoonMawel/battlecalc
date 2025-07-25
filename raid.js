@@ -131,6 +131,41 @@ function renderCharactersUI() {
         `;
         container.appendChild(charHeader);
 
+        // ===== ⚡️추가할 부분 시작⚡️ =====
+        // 체력 입력 필드 추가
+        const hpInputGroup = document.createElement('div');
+        hpInputGroup.className = 'hp-input-group';
+        hpInputGroup.innerHTML = `<label for="char-hp-input-${idx}">현재 체력:</label>`;
+        const hpInput = document.createElement('input');
+        hpInput.type = 'number';
+        hpInput.id = `char-hp-input-${idx}`;
+        hpInput.className = 'char-hp-input';
+        hpInput.min = "0"; // 체력은 0 미만이 될 수 없도록 설정
+        hpInput.value = char.status.currentHP; // 현재 체력으로 초기값 설정
+        hpInputGroup.appendChild(hpInput);
+        container.appendChild(hpInputGroup);
+        // ===== ⚡️추가할 부분 끝⚡️ =====
+
+        // ===== ⚡️추가할 부분 시작⚡️ =====
+        // 광기 입력 필드 추가 (분노 천성 캐릭터는 제외)
+        let madnessInput = null;
+        if (char.talents && (char.talents.includes('광') || char.talents.includes('악')) && !(char.traits && char.traits.includes('분노'))) {
+            const madnessInputGroup = document.createElement('div');
+            madnessInputGroup.className = 'madness-input-group';
+            madnessInputGroup.innerHTML = `<label for="char-madness-input-${idx}">광기:</label>`;
+            madnessInput = document.createElement('input');
+            madnessInput.type = 'number';
+            madnessInput.id = `char-madness-input-${idx}`;
+            madnessInput.className = 'char-madness-input';
+            madnessInput.min = "0";
+            madnessInput.max = "50"; // 광기 최대치 (현재 코드 기준)
+            madnessInput.value = char.status.madness; // 현재 광기 값으로 초기값 설정
+            madnessInputGroup.appendChild(madnessInput);
+            container.appendChild(madnessInputGroup);
+        }
+        // ===== ⚡️추가할 부분 끝⚡️ =====
+
+
         const controlsDiv = document.createElement('div');
         controlsDiv.className = 'char-controls';
 
@@ -267,7 +302,9 @@ function renderCharactersUI() {
             activeCheckbox: document.getElementById(`char-active-${idx}`),
             statusInfoDiv: document.getElementById(`status-info-${idx}`),
             soulResonanceCheckbox: document.getElementById(`soul-resonance-active-${idx}`),
-            soulResonancePartnerSelect: document.getElementById(`soul-resonance-partner-${idx}`)
+            soulResonancePartnerSelect: document.getElementById(`soul-resonance-partner-${idx}`),
+            hpInput: hpInput, // 새로 추가한 체력 입력 필드 참조 저장
+            madnessInput: madnessInput // 새로 추가한 광기 입력 필드 참조 저장
         };
         updateCharacterStatusUI(char); // 초기 상태 표시
 
@@ -284,12 +321,55 @@ function renderCharactersUI() {
                 participatingCharacters = participatingCharacters.filter(c => c !== char);
             }
         });
+        // 체력 입력 필드 값 변경 시 이벤트 리스너
+        hpInput.addEventListener('change', () => {
+            const newHP = parseInt(hpInput.value); // 입력된 값을 정수로 변환
+            if (!isNaN(newHP)) { // 유효한 숫자인지 확인
+                char.status.currentHP = Math.max(0, newHP); // 0 미만으로 내려가지 않도록
+                updateCharacterStatusUI(char); // UI 업데이트
+                saveCharacterStatesToLocalStorage(); // 변경사항 로컬 스토리지에 저장
+            } else {
+                hpInput.value = char.status.currentHP; // 숫자가 아니면 원래 값으로 되돌림
+            }
+        });
+        // ===== ⚡️추가할 부분 시작⚡️ =====
+        // 광기 입력 필드 값 변경 시 이벤트 리스너
+        if (madnessInput) { // madnessInput이 존재하는 경우에만 이벤트 리스너 추가
+            madnessInput.addEventListener('change', () => {
+                let newMadness = parseInt(madnessInput.value);
+                if (!isNaN(newMadness)) {
+                    // 광기 최대치 (50)와 최소치 (0) 적용
+                    newMadness = Math.max(0, Math.min(50, newMadness));
+                    char.status.madness = newMadness;
+                    updateCharacterStatusUI(char); // UI 업데이트
+                    saveCharacterStatesToLocalStorage(); // 변경사항 로컬 스토리지에 저장
+                } else {
+                    madnessInput.value = char.status.madness; // 숫자가 아니면 원래 값으로 되돌림
+                }
+            });
+        }
+        // ===== ⚡️추가할 부분 끝⚡️ =====
     });
 }
 
 // 캐릭터 상태 UI 업데이트
 function updateCharacterStatusUI(char) {
     if (!char.ui || !char.ui.statusInfoDiv) return;
+
+    // ===== ⚡️추가할 부분 시작⚡️ =====
+    // 체력 입력 필드가 있다면, 현재 체력으로 값 업데이트
+    if (char.ui.hpInput) {
+        char.ui.hpInput.value = char.status.currentHP;
+    }
+    // ===== ⚡️추가할 부분 끝⚡️ =====
+
+    // ===== ⚡️추가할 부분 시작⚡️ =====
+    // 광기 입력 필드가 있다면, 현재 광기 수치로 값 업데이트
+    if (char.ui.madnessInput) {
+        char.ui.madnessInput.value = char.status.madness;
+    }
+    // ===== ⚡️추가할 부분 끝⚡️ =====
+
     const status = char.status;
     let hpDisplay = `HP: ${status.currentHP}/${status.maxHP}`;
 
@@ -365,6 +445,27 @@ function resetCharacterStates() {
         updateCharacterStatusUI(char);
     });
     document.getElementById('calculateTurnBtn').disabled = false;
+}
+
+function saveCharacterStatesToLocalStorage() {
+    const charStatesToSave = {};
+    allCharacters.forEach(char => {
+        charStatesToSave[char.name] = {
+            currentHP: char.status.currentHP,
+            maxHP: char.status.maxHP,
+            originalMaxHP: char.status.originalMaxHP,
+            resonance: char.status.resonance,
+            madness: char.status.madness,
+            buffs: char.status.buffs,
+            activeSkills: char.status.activeSkills
+            // 필요한 다른 status 속성들도 여기에 추가
+        };
+    });
+    try {
+        localStorage.setItem('characterStates', JSON.stringify(charStatesToSave));
+    } catch (e) {
+        console.error("로컬 스토리지 저장 오류:", e);
+    }
 }
 
 async function calculateTurn() {
@@ -649,6 +750,12 @@ async function calculateTurn() {
                 if (char2MadnessLimit) failedChars.push(char2.name);
                 calcDetails.innerHTML += `[영혼의 공명] 발동 실패 (${char1.name}, ${char2.name}): ${failedChars.join(', ')}는 광기 수치 50 이상으로 사용 불가합니다.\n`;
                 pairSummary.reason = `${failedChars.join(', ')} 광기 50 이상`;
+                // <<<<<--- 추가/수정 시작
+                char1.ui.soulResonanceCheckbox.checked = false;
+                if (char1.ui.soulResonancePartnerSelect) char1.ui.soulResonancePartnerSelect.value = 'none';
+                char2.ui.soulResonanceCheckbox.checked = false;
+                if (char2.ui.soulResonancePartnerSelect) char2.ui.soulResonancePartnerSelect.value = 'none';
+                // <<<<<--- 추가/수정 끝
             } else if (char1.status.resonance >= resonanceCondition1 && char2.status.resonance >= resonanceCondition2) {
                 // 모든 조건 충족: 영혼의 공명 발동
                 char1.status.buffs.push({ type: 'soulResonance', remainingTurns: 4 });
@@ -669,6 +776,12 @@ async function calculateTurn() {
                 if (char2.status.resonance < resonanceCondition2) failureReason.push(`${char2.name} 공명률 부족 (${char2.status.resonance}%/${resonanceCondition2}%)`);
                 calcDetails.innerHTML += `[영혼의 공명] 발동 실패 (${char1.name}, ${char2.name}): ${failureReason.join(', ')}\n`;
                 pairSummary.reason = failureReason.join(', ');
+                // <<<<<--- 추가/수정 시작
+                char1.ui.soulResonanceCheckbox.checked = false;
+                if (char1.ui.soulResonancePartnerSelect) char1.ui.soulResonancePartnerSelect.value = 'none';
+                char2.ui.soulResonanceCheckbox.checked = false;
+                if (char2.ui.soulResonancePartnerSelect) char2.ui.soulResonancePartnerSelect.value = 'none';
+                // <<<<<--- 추가/수정 끝
             }
             resultDiv.innerHTML += `** [영혼의 공명] 발동 시도 (${char1.name} ↔ ${char2.name}): ${pairSummary.result} - ${pairSummary.reason}**\n`;
         }
@@ -705,7 +818,6 @@ async function calculateTurn() {
     summaryCharacterActionsDetail.forEach(detail => {
         resultDiv.innerHTML += `- ${detail.char}: ${detail.actions.join(', ')}\n`;
     });
-
 
     // 3. 행운 다이스 결과 및 최종 계수 계산 (공격/방어)
     calcDetails.innerHTML += `\n=== 캐릭터 공격/방어 계산 ===\n`;
@@ -874,13 +986,20 @@ async function calculateTurn() {
         });
     }
 
+    // <<<<<--- 추가/수정 시작: 보스 공격 섹션에 방어 계수 추가
+
     // 4. 적의 행동 (공격)
     calcDetails.innerHTML += `\n=== 보스 행동 ===\n`;
     resultDiv.innerHTML += `\n--- 보스 공격 ---\n`;
 
     const bossAttackRoll = rollDice(boss.attackDice[0], boss.attackDice[1]);
-    const bossLuckResult = getBossLuckResult(boss.luckDice[0], boss.luckThresholds); // 보스 행운 판정 함수 변경
+    const bossLuckResult = getBossLuckResult(boss.luckDice[0], boss.luckThresholds);
     let bossFinalAttack = bossAttackRoll;
+
+    // 보스의 이번 턴 방어 계수 굴림 및 저장
+    const bossDefenseThisTurn = rollDice(boss.defenseDice[0], boss.defenseDice[1]);
+    let bossFinalDefense = bossDefenseThisTurn;
+    // (만약 보스에게 방어 관련 버프/디버프가 있다면 여기에 적용)
 
     let bossAttackResultLine = `${boss.name}의 공격 계수: ${bossAttackRoll}`;
     if (bossLuckResult === 'critical') {
@@ -890,6 +1009,10 @@ async function calculateTurn() {
     }
     bossAttackResultLine += ` -> 최종 ${bossFinalAttack}\n`;
     calcDetails.innerHTML += bossAttackResultLine;
+
+    // 보스의 방어 계수도 여기서 함께 표시
+    calcDetails.innerHTML += `${boss.name}의 이번 턴 방어 계수: ${bossFinalDefense}\n`;
+    resultDiv.innerHTML += `--- ${boss.name}의 방어 계수: ${bossFinalDefense} ---\n`;
 
 
     if (bossLuckResult === 'fail') {
@@ -952,6 +1075,7 @@ async function calculateTurn() {
         });
     }
 
+    // <<<<<--- 추가/수정 끝
 
     // 5. 캐릭터가 보스에게 공격한 데미지 적용
     let totalDamageToBoss = 0;
@@ -960,18 +1084,17 @@ async function calculateTurn() {
         if (charAction.action === 'attack' && charAction.luckResult !== 'fail' && charAction.action !== 'incapacitated') {
             let damageDealt = charAction.finalPower;
 
-            // 보스의 방어 다이스 굴림
-            const bossDefenseRoll = rollDice(boss.defenseDice[0], boss.defenseDice[1]);
-            let finalBossDefense = bossDefenseRoll;
+            // 보스의 방어 계수 재사용 (4단계에서 이미 계산됨)
+            let finalBossDefense = bossFinalDefense; // <<<<<--- 수정된 부분: 미리 계산된 값 사용
 
             // 보스에게 방어력 감소 디버프가 있다면 적용 (아직 구현 안 됨, 필요시 추가)
             // (TODO: 보스에게 적용되는 디버프가 있다면 이 곳에 추가 로직)
 
-            calcDetails.innerHTML += `  -> ${boss.name}의 방어 계수: ${finalBossDefense}\n`;
+            calcDetails.innerHTML += `  -> ${boss.name}의 방어 계수: ${finalBossDefense}\n`;
             damageDealt = Math.max(0, damageDealt - finalBossDefense);
 
             totalDamageToBoss += damageDealt;
-            calcDetails.innerHTML += `  ${charAction.char.name}이(가) 보스에게 ${charAction.finalPower}의 공격을 가했습니다. (보스 방어 ${finalBossDefense} 적용 후) ${damageDealt}의 피해를 입혔습니다.\n`;
+            calcDetails.innerHTML += `  ${charAction.char.name}이(가) 보스에게 ${charAction.finalPower}의 공격을 가했습니다. (보스 방어 ${finalBossDefense} 적용 후) ${damageDealt}의 피해를 입혔습니다.\n`;
         }
     });
     currentBossHP = Math.max(0, currentBossHP - totalDamageToBoss);
@@ -982,7 +1105,6 @@ async function calculateTurn() {
     } else {
         resultDiv.innerHTML += `** 이번 턴 보스에게 입힌 피해는 없습니다.**\n`;
     }
-
 
     // 6. 버프/디버프 턴 감소 및 종료 처리
     let removedBuffs = [];
@@ -1074,6 +1196,12 @@ async function calculateTurn() {
 
     turn++;
 }
+
+// 계산 과정 토글
+document.getElementById('toggleDetailsBtn').addEventListener('click', () => {
+    const div = document.getElementById('calcDetails');
+    div.style.display = div.style.display === 'none' ? 'block' : 'none';
+});
 
 // 계산 과정 토글
 document.getElementById('toggleDetailsBtn').addEventListener('click', () => {
