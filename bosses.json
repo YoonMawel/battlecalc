@@ -1,0 +1,43 @@
+[
+  {
+    "name": "곡두",
+    "maxHP": 5000,
+    "attackDice": [2, 10],
+    "defenseDice": [2, 10],
+    "luckDice": [1, 10],
+    "luckThresholds": { "fail": [1], "success": [2,3,4,5,6,7,8], "critical": [9,10] },
+    "attackPattern": { "targets": 3, "type": "random" },
+    "precursors": [
+      {
+        "text": ["그대들의 자격을 증명하겠다.", "₊⁺⊹ 랜덤 10인의 공명률 30 감소"],
+        "effect": { "resonanceDown": 30, "targetCount": 10 }
+      },
+      {
+        "text": ["첫 번째, 眞理.", "₊⁺⊹ 랜덤 10인의 최종 공격값 15 감소"],
+        "effect": { "attackDown": 15, "targetCount": 10 }
+      },
+      {
+        "text": ["두 번째, 業報.", "₊⁺⊹ 랜덤 10인의 최종 방어값 15 감소"],
+        "effect": { "defenseDown": 15, "targetCount": 10 }
+      },
+      {
+        "text": ["세 번째, 變化.", "₊⁺⊹ 랜덤 10인, 해당 턴 [재능] 사용 불가"],
+        "effect": { "disableTalents": true, "targetCount": 10 }
+      },
+      {
+        "text": ["◼◼◼의 축복이 내리리라.", "₊⁺⊹ 모든 전투 참가자, 해당 턴 [행동 불능] 상태 진입"],
+        "effect": { "stunAll": true }
+      }
+    ]
+  },
+  {
+    "name": "만파식적",
+    "maxHP": 7000,
+    "attackDice": [2, 10],
+    "defenseDice": [2, 10],
+    "luckDice": [1, 10],
+    "luckThresholds": { "fail": [1], "success": [2,3,4,5,6,7,8], "critical": [9,10] },
+    "attackPattern": { "targets": 3, "type": "random" },
+    "precursors": []
+  }
+]

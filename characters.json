@@ -1,0 +1,350 @@
+[
+  {
+    "name": "강 진",
+    "hp": 5,
+    "luck": 0,
+    "attack": 4,
+    "defense": 4,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": []
+  },
+  {
+    "name": "나타",
+    "hp": 2,
+    "luck": 1,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "니샤 프로스트",
+    "hp": 4,
+    "luck": 1,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "분노"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "동방유라",
+    "hp": 0,
+    "luck": 5,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["광", "투"]
+  },
+  {
+    "name": "랑 야오",
+    "hp": 2,
+    "luck": 4,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "분노"],
+    "talents": ["악"]
+  },
+  {
+    "name": "린 밍위",
+    "hp": 3,
+    "luck": 2,
+    "attack": 4,
+    "defense": 2,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["분노", "탐욕"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "바코드",
+    "hp": 2,
+    "luck": 5,
+    "attack": 1,
+    "defense": 2,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "안여령",
+    "hp": 3,
+    "luck": 1,
+    "attack": 5,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "나태"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "이 예지",
+    "hp": 5,
+    "luck": 5,
+    "attack": 0,
+    "defense": 5,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["광", "투"]
+  },
+  {
+    "name": "이차윤",
+    "hp": 5,
+    "luck": 3,
+    "attack": 1,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["광", "투"]
+  },
+  {
+    "name": "지위",
+    "hp": 3,
+    "luck": 2,
+    "attack": 4,
+    "defense": 4,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "나태"],
+    "talents": ["악", "전"]
+  },
+  {
+    "name": "카게노우라 아야메",
+    "hp": 3,
+    "luck": 1,
+    "attack": 2,
+    "defense": 4,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["광"]
+  },
+  {
+    "name": "허일서",
+    "hp": 4,
+    "luck": 2,
+    "attack": 4,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "분노"],
+    "talents": ["광", "투"]
+  },
+  {
+    "name": "히지리카와 스미레",
+    "hp": 4,
+    "luck": 1,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": []
+  },
+  {
+    "name": "네모",
+    "hp": 3,
+    "luck": 5,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "네코야시키 미케",
+    "hp": 2,
+    "luck": 5,
+    "attack": 2,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": []
+  },
+  {
+    "name": "리우원란",
+    "hp": 5,
+    "luck": 4,
+    "attack": 5,
+    "defense": 0,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["광", "투"]
+  },
+  {
+    "name": "린 슈위",
+    "hp": 3,
+    "luck": 4,
+    "attack": 2,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "분노"],
+    "talents": ["악", "투"]
+  },
+  {
+    "name": "미나미 세이가",
+    "hp": 3,
+    "luck": 2,
+    "attack": 5,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "분노"],
+    "talents": []
+  },
+  {
+    "name": "백 연",
+    "hp": 3,
+    "luck": 2,
+    "attack": 5,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["악", "광"]
+  },
+  {
+    "name": "아이신 토우하",
+    "hp": 4,
+    "luck": 2,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": []
+  },
+  {
+    "name": "오토하 노엘",
+    "hp": 0,
+    "luck": 5,
+    "attack": 5,
+    "defense": 0,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": []
+  },
+  {
+    "name": "유키카",
+    "hp": 1,
+    "luck": 4,
+    "attack": 5,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "탐욕"],
+    "talents": ["악", "광"]
+  },
+  {
+    "name": "이 삭",
+    "hp": 5,
+    "luck": 4,
+    "attack": 2,
+    "defense": 1,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "나태"],
+    "talents": ["악", "전"]
+  },
+  {
+    "name": "제이비어 시어러",
+    "hp": 3,
+    "luck": 4,
+    "attack": 5,
+    "defense": 2,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["분노", "탐욕"],
+    "talents": ["악", "광"]
+  },
+  {
+    "name": "주신",
+    "hp": 1,
+    "luck": 3,
+    "attack": 5,
+    "defense": 4,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["악", "광"]
+  },
+  {
+    "name": "지연우",
+    "hp": 2,
+    "luck": 3,
+    "attack": 4,
+    "defense": 2,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "나태"],
+    "talents": []
+  },
+  {
+    "name": "최 효운",
+    "hp": 3,
+    "luck": 3,
+    "attack": 3,
+    "defense": 3,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["교만", "나태"],
+    "talents": ["악", "광"]
+  },
+  {
+    "name": "투야",
+    "hp": 3,
+    "luck": 1,
+    "attack": 5,
+    "defense": 5,
+    "items": {
+      "potion": 100
+    },
+    "traits": ["나태", "탐욕"],
+    "talents": ["악", "투"]
+  }
+]

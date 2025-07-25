@@ -1,33 +1,342 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>전투력 계산기 (레이드)</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: sans-serif; margin: 20px; }
-    select, button { margin: 5px; }
-    .calc-details { display: none; background: #f3f3f3; padding: 10px; margin-top: 10px; }
-    .result-line { margin: 5px 0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>레이드 시뮬레이터</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f4f4; color: #333; }
+        
+        /* 새로 추가되는 헤더 관련 스타일 */
+        nav {
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            margin-bottom: 20px; /* 메인 콘텐츠와의 간격 */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            /* border-radius는 현재 mode2.html의 전체적인 둥근 느낌과 일치시키기 위해 제외했습니다. */
+            /* 만약 nav 자체도 둥글게 하고 싶다면 border-radius: 5px; 를 추가해주세요. */
+        }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-start; /* 좌측 정렬 */
+            align-items: center;
+            padding: 0 20px;
+        }
+        .logo {
+            /* "조사툴" 텍스트 제거 - HTML에서는 유지하되 CSS로 숨김 */
+            display: none; 
+        }
+        .menu-toggle {
+            display: none; /* 기본적으로 숨김 (모바일용) */
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            margin-left: auto; /* 모바일 메뉴 토글을 우측으로 밀기 */
+        }
+        .menu {
+            display: flex;
+            gap: 20px;
+            /* 로고가 없어졌으므로, 메뉴가 바로 시작되도록 margin-left 제거 */
+            /* margin-left: 20px; */ 
+        }
+        .menu a {
+            color: white;
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 5px; /* 메뉴 항목 자체는 둥글게 */
+            transition: background-color 0.3s ease;
+        }
+        .menu a:hover {
+            background-color: #555;
+        }
+
+        /* 반응형 디자인 (모바일 메뉴) */
+        @media (max-width: 768px) {
+            .nav-container {
+                justify-content: space-between; /* 모바일에서는 토글 버튼과 메뉴 분리 */
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .menu {
+                display: none;
+                flex-direction: column;
+                width: 100%;
+                position: absolute;
+                top: 60px; /* 헤더 높이에 따라 조정 */
+                left: 0;
+                background-color: #333;
+                text-align: left; /* 모바일 메뉴는 좌측 정렬 유지 */
+                z-index: 1000;
+                margin-left: 0; /* 모바일에서는 왼쪽 마진 제거 */
+            }
+            .menu.active {
+                display: flex;
+            }
+            .menu a {
+                padding: 15px;
+                border-bottom: 1px solid #555;
+            }
+            .menu a:last-child {
+                border-bottom: none;
+            }
+        }
+        
+        /* 기존 mode2.html의 스타일 (복구된 "제일 예쁜" UI) */
+        h1 { color: #0056b3; margin-top: 0; font-size: 2em; } /* h1을 메인 콘텐츠 안으로 옮김 */
+        .main-content {
+            margin: 20px; /* 기존 body margin을 이 컨테이너에 적용 */
+        }
+        .container { display: flex; flex-wrap: wrap; gap: 20px; }
+        #characterSelection {
+            flex: 2;
+            min-width: 400px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #characterList {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .char-container {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .char-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .char-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .char-controls > div {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .char-controls label {
+            min-width: 40px;
+            text-align: right;
+            font-size: 0.9em;
+            color: #555;
+        }
+        /* 공명률 최대치 표기를 위한 스타일 추가 */
+        .resonance-display {
+            font-size: 0.85em;
+            color: #777;
+            margin-left: 5px;
+            min-width: 60px; /* 공간 확보 */
+        }
+
+        select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #resultsSection {
+            flex: 1;
+            min-width: 300px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #result, #calcDetails {
+            white-space: pre-wrap;
+            background-color: #e9e9e9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        #calcDetails {
+            display: none; /* 기본적으로 숨김 */
+            background-color: #f0f0f0;
+            font-size: 0.85em;
+            color: #555;
+        }
+        .status-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        #bossSelection {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        #bossSelection label {
+            font-weight: bold;
+            color: #0056b3;
+        }
+        .special-ability-group {
+            margin-left: 15px; /* 천성/재능과 구분 */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
 </head>
 <body>
-  <nav>
-    <div class="nav-container">
-      <!-- 로고 제거됨 -->
-      <button class="menu-toggle" aria-label="메뉴 열기">☰</button>
-      <div class="menu">
-        <a href="index.html">팀별조사</a>
-        <a href="mode2.html">레이드</a>
-        <a href="log.html">전투 기록</a>
-      </div>
+    <nav>
+        <div class="nav-container">
+            <div class="logo">조사툴</div> 
+            <button class="menu-toggle" aria-label="메뉴 열기">☰</button>
+            <div class="menu">
+                <a href="index.html">팀별조사</a>
+                <a href="mode2.html">레이드</a>
+                <a href="log.html">전투 기록</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <h1>레이드 시뮬레이터</h1>
+
+        <div id="bossSelection">
+            <label for="bossSelect">보스 선택:</label>
+            <select id="bossSelect">
+                <option value="곡두">곡두</option>
+                <option value="만파식적">만파식적</option> </select>
+        </div>
+
+        <div class="container">
+            <div id="characterSelection">
+                <h2>캐릭터 설정</h2>
+                <div id="characterList">
+                    </div>
+                <button id="calculateTurnBtn">다음 턴 계산</button>
+            </div>
+
+            <div id="resultsSection">
+                <h2>전투 결과</h2>
+                <div id="result">
+                    </div>
+                <button id="toggleDetailsBtn">상세 계산 과정 토글</button>
+                <div id="calcDetails">
+                    </div>
+            </div>
+        </div>
     </div>
-  </nav>
 
-  <h1>전투력 계산기 (레이드)</h1>
+    <script src="raid.js"></script>
+    <script>
+        // 이 스크립트는 raid.js가 로드된 후에 실행되어야 합니다.
+        // raid.js 내의 fetchCharactersAndRender 함수를 수정하여 공명률 표시를 추가해야 합니다.
+        // raid.js 파일에 다음 함수를 추가하거나, fetchCharactersAndRender 내부의 resonanceInput 생성 부분을 수정해주세요.
 
-  <!-- 여기부터 레이드 계산 시스템 내용 추가 (추후 네 설명으로 완성) -->
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchCharactersAndRender(); // raid.js의 렌더링 함수 실행
 
-  <script src="script.js"></script>
+            // 모바일 메뉴 토글 스크립트 (index.html에서 가져옴)
+            const menuToggle = document.querySelector('.menu-toggle');
+            const menu = document.querySelector('.menu');
+
+            if (menuToggle && menu) {
+                menuToggle.addEventListener('click', () => {
+                    menu.classList.toggle('active');
+                });
+            }
+        });
+
+        // =========================================================================
+        // raid.js 파일에 추가해야 할 또는 수정해야 할 부분에 대한 가이드입니다.
+        // 실제로는 raid.js 파일을 직접 수정하셔야 합니다.
+        // =========================================================================
+
+        /*
+        // raid.js 파일에서 캐릭터를 렌더링하는 fetchCharactersAndRender 함수 내에서
+        // 공명률 입력 필드를 생성하는 부분을 찾아 다음과 같이 수정해주세요.
+
+        // 예시: 캐릭터 UI 생성 함수 어딘가 (createCharacterUI 함수 또는 유사한 부분)
+        function createCharacterUI(character, index) {
+            // ... (기존 코드) ...
+
+            // 공명률 입력 필드 부분 찾기
+            const resonanceInput = document.createElement('input');
+            resonanceInput.type = 'number';
+            resonanceInput.id = `resonance-${character.name}`;
+            resonanceInput.value = character.resonance || 0; // 기본값
+            resonanceInput.min = 0;
+            resonanceInput.max = 100; // 최대 100%
+            resonanceInput.addEventListener('input', (event) => {
+                let value = parseInt(event.target.value);
+                if (isNaN(value) || value < 0) value = 0;
+                if (value > 100) value = 100;
+                event.target.value = value;
+                character.resonance = value; // 캐릭터 데이터 업데이트
+                updateResonanceDisplay(character.name, value); // 공명률 표시 업데이트
+            });
+
+            const resonanceLabel = document.createElement('label');
+            resonanceLabel.setAttribute('for', `resonance-${character.name}`);
+            resonanceLabel.textContent = '공명률:';
+
+            const resonanceDisplay = document.createElement('span');
+            resonanceDisplay.id = `resonance-display-${character.name}`;
+            resonanceDisplay.classList.add('resonance-display');
+            updateResonanceDisplay(character.name, character.resonance || 0); // 초기값 설정
+
+            const resonanceGroup = document.createElement('div');
+            resonanceGroup.appendChild(resonanceLabel);
+            resonanceGroup.appendChild(resonanceInput);
+            resonanceGroup.appendChild(resonanceDisplay); // 표시 추가
+
+            // ... (resonanceGroup을 char-controls에 추가하는 부분) ...
+        }
+
+        // 공명률 표시를 업데이트하는 함수 (raid.js에 추가)
+        function updateResonanceDisplay(characterName, currentValue) {
+            const displayElement = document.getElementById(`resonance-display-${characterName}`);
+            if (displayElement) {
+                displayElement.textContent = `(${currentValue}/100%)`;
+            }
+        }
+
+        // fetchCharactersAndRender가 실행될 때 모든 캐릭터의 공명률 표시도 초기화되도록
+        // fetchCharactersAndRender 내부에서 createCharacterUI 호출 후 updateResonanceDisplay 호출 또는
+        // createCharacterUI 내부에서 초기 updateResonanceDisplay 호출.
+        */
+        // =========================================================================
+    </script>
 </body>
 </html>
