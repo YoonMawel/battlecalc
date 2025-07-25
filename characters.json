@@ -39,8 +39,8 @@
     "name": "동방유라",
     "hp": 0,
     "luck": 5,
-    "attack": 5,
-    "defense": 1,
+    "attack": 7,
+    "defense": 4,
     "items": {
       "potion": 100
     },
@@ -51,8 +51,8 @@
     "name": "랑 야오",
     "hp": 2,
     "luck": 4,
-    "attack": 5,
-    "defense": 1,
+    "attack": 7,
+    "defense": 4,
     "items": {
       "potion": 100
     },
@@ -63,8 +63,8 @@
     "name": "린 밍위",
     "hp": 3,
     "luck": 2,
-    "attack": 4,
-    "defense": 2,
+    "attack": 6,
+    "defense": 5,
     "items": {
       "potion": 100
     },
@@ -99,8 +99,8 @@
     "name": "이 예지",
     "hp": 5,
     "luck": 5,
-    "attack": 0,
-    "defense": 5,
+    "attack": 2,
+    "defense": 8,
     "items": {
       "potion": 100
     },
@@ -207,8 +207,8 @@
     "name": "린 슈위",
     "hp": 3,
     "luck": 4,
-    "attack": 2,
-    "defense": 3,
+    "attack": 4,
+    "defense": 6,
     "items": {
       "potion": 100
     },
@@ -231,8 +231,8 @@
     "name": "백 연",
     "hp": 3,
     "luck": 2,
-    "attack": 5,
-    "defense": 3,
+    "attack": 7,
+    "defense": 6,
     "items": {
       "potion": 100
     },
@@ -339,8 +339,8 @@
     "name": "투야",
     "hp": 3,
     "luck": 1,
-    "attack": 5,
-    "defense": 5,
+    "attack": 7,
+    "defense": 8,
     "items": {
       "potion": 100
     },
